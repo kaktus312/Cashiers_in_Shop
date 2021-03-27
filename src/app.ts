@@ -61,10 +61,10 @@ const newCashier:ICashier = {
 // db.completDeleteCashier(20);
 
 // getting info about all cashiers
-db.getAllCashiers();
+// db.getAllCashiers();
 
 // getting information about cashier with a special filter_1
-// db.getTargetCashiers1();
+db.getTargetCashiers1();
 
 // getting information about cashier with a special filter_2
 // db.getTargetCashiers2();

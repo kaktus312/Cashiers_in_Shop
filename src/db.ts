@@ -163,13 +163,15 @@ export class ShopDB {
    */
   public getTargetCashiers1():void {
     console.log('Данi по усіх касирах магазину за всю історію роботи магазинів ATB у місті Львів, які мають більше 5 років досвіду та раніше працювали у Silpo або Arsen:');
-    // const sql:string = `SELECT Cashier.*, Address.* FROM Cashier, Address Where Cashier.addrID = Address.id AND Address.City = '${City[City.Львов]}' AND startWork<='2016-01-01' AND lastNet IN (${Net.Сiльпо} , ${Net.Арсен});`;
-    // console.log(sql);
-    // this.db.each(sql, (err: any, row: any) => {
-    //   if (row) {
-    //     console.log(parceCashier(row));
-    //   }
-    // });
+    const sql:string = `SELECT Cashier.*, Address.* FROM Cashier, Address WHERE Cashier.addrID = Address.id AND Cashier.shopID IN (SELECT Shop.id FROM Shop, Address Where Shop.addrID = Address.id AND Address.City = '${City[City.Львов]}') AND Cashier.lastNet IN (${Net.Сiльпо} , ${Net.Арсен}) AND Cashier.startWork<='2016-01-01'`;
+    console.log(sql);
+    this.db.each(sql, (err: any, row: any) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(parceCashier(row));
+    });
   }
 
   /**
