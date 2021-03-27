@@ -1,0 +1,1 @@
+// environmental variables and configuration related stuff, use dotenv npm package

@@ -1,0 +1,33 @@
+{
+  "name": "Cashiers_in_Shop",
+  "version": "1.0.0",
+  "description": "Node.js (TS) Internship - Test task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaktus312/Cashiers_in_Shop.git"
+  },
+  "keywords": [],
+  "author": "Andrej Titov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kaktus312/Cashiers_in_Shop/issues"
+  },
+  "homepage": "https://github.com/kaktus312/Cashiers_in_Shop#readme",
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "@types/sqlite3": "^3.1.7",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "sqlite3": "^5.0.2"
+  }
+}
