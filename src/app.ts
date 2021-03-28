@@ -13,14 +13,14 @@ const db = new ShopDB('db.sqlite');
 // createing a new Casheir
 const newCashier:ICashier = {
   id: null,
-  personnelNumber: '457931',
+  personnelNumber: '457932',
   employeeName: {
     lastName: 'Бабенко',
     firstName: 'Анна',
     patronymic: 'Николаевна',
   },
   sex: Sex.female,
-  phone: '380962571542',
+  phone: '380962571544',
   addr: {
     city: City.Одесса,
     street: 'ул. Бенюка',
@@ -36,25 +36,25 @@ const newCashier:ICashier = {
 };
 
 // adding created Cashier to the DB
-// newCashier.id = db.addCashier(newCashier);
+const newCashierId:Promise<number> = db.addCashier(newCashier);
+newCashierId.then((value) => {
+  newCashier.id = value;
+  console.log(newCashier.id);
 
-// getting information about cashier with id=19 and updating it
-// const tmpCashier:Promise<ICashier> = db.getCashierById(19);
-// tmpCashier.then((values) => {
-//   const cashier:ICashier = values;
-//   console.log(cashier);
+  // getting information about cashier with id=19 and updating it
+  const tmpCashier:Promise<ICashier> = db.getCashierById(newCashier.id);
+  tmpCashier.then((values) => {
+    const cashier:ICashier = values;
+    console.log(cashier);
 
-//   // updating information about cashier
-//   cashier.birthday = new Date(1983, 0, 3); // Month in 0-11
-//   cashier.addr.building = 45;
-//   cashier.addr.apartment = 15;
-//   console.log(cashier);
-// db.updateCashier(cashier);
-// });
-
-// (async () => {
-//   const tmpCashier = Promise.all([db.getCashierById(19)]).then((values) => console.log(values));
-// })();
+    // updating information about cashier
+    cashier.birthday = new Date(1983, 0, 3); // Month in 0-11
+    cashier.addr.building = 45;
+    cashier.addr.apartment = 15;
+    console.log(cashier);
+    db.updateCashier(cashier);
+  });
+});
 
 // deleting information about cashier with some id
 // db.del(20);
@@ -64,7 +64,7 @@ const newCashier:ICashier = {
 // db.getAllCashiers();
 
 // getting information about cashier with a special filter_1
-db.getTargetCashiers1();
+// db.getTargetCashiers1();
 
 // getting information about cashier with a special filter_2
 // db.getTargetCashiers2();
