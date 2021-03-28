@@ -1,7 +1,7 @@
 // main methods (CRUD) + db connection; imports stuff from models.ts
 import { Database } from 'sqlite3';
 import {
-  ICashier, Net, Sex, City,
+  ICashier, Net, Sex, City, SqlFilter,
 } from './models';
 import { dateFormat, parceCashier } from './utils';
 
@@ -277,6 +277,33 @@ export class ShopDB {
                                Address 
                          WHERE Cashier.addrID = Address.ID;`;
     console.log('Информация о всех кассирах:');
+    this.db.each(sql, (err: any, row: any) => {
+      if (row) {
+        console.log(parceCashier(row));
+      }
+    });
+  }
+
+  /**
+   * Get information about all Cashiers in the Shop accordin some filter
+   */
+  public getAllFiltredCashiers(fl:SqlFilter):void {
+    let fltr:string = (fl.firstName) ? ` AND firstName = '${fl.firstName}'` : '';
+    fltr += (fl.lastName) ? ` AND lastName = '${fl.lastName}'` : '';
+    fltr += (fl.phone) ? ` AND phone = '${fl.phone}'` : '';
+    fltr += (fl.operator) ? ` AND phone LIKE '%${fl.operator}%'` : '';
+    fltr += (fl.sex) ? ` AND sex = '${fl.sex}'` : '';
+    fltr += (fl.lastNet) ? ` AND lastNet = '${fl.lastNet}'` : '';
+    fltr += (fl.city) ? ` AND Address.city = '${City[fl.city]}'` : '';
+
+    const sql:string = `SELECT Cashier.*, 
+                               Address.* 
+                          FROM Cashier, 
+                               Address 
+                         WHERE Cashier.addrID = Address.ID
+                                ${fltr};`;
+    console.log('Информация о всех кассирах согласно заданному фильтру:');
+    console.log(sql);
     this.db.each(sql, (err: any, row: any) => {
       if (row) {
         console.log(parceCashier(row));

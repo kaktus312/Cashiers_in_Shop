@@ -77,10 +77,20 @@ export interface ICashier {
     // delete ():void
 }
 
-interface ICashRegister {
+export interface ICashRegister {
     readonly id:number
     cashBoxNumber:number
     cashierID:number
     value:number
     transaction_Time:Date
+}
+
+export type SqlFilter = {
+    lastName?:string
+    firstName?:string
+    phone?:string
+    sex?:Sex
+    lastNet?:Net
+    operator?:string
+    city?:City
 }
