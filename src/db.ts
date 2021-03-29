@@ -5,30 +5,6 @@ import {
 } from './models';
 import { dateFormat, parceCashier } from './utils';
 
-// const sqlite3 = require('sqlite3').verbose();
-// const sqlite3 = require('sqlite3').verbose();
-// const db = new sqlite3.Database(':memory:');
-// const db = new sqlite3.Database('./db.sqlite');
-
-// db.serialize(() => {
-//   const res = db.get('SELECT name FROM sqlite_master WHERE type="table" AND name=?', 'lorem');
-//   if (!res) {
-//     db.run('CREATE TABLE lorem (info TEXT)');
-//   }
-
-//   const stmt = db.prepare('INSERT INTO lorem VALUES (?)');
-//   for (let i = 0; i < 10; i += 1) {
-//     stmt.run(`Ipsum ${i}`);
-//   }
-//   stmt.finalize();
-
-// db.each('SELECT rowid AS id, info FROM lorem',(err: any, row: { id: string; info: string; }) => {
-//     console.log(`${row.id}: ${row.info}`);
-//   });
-// });
-
-// db.close();
-
 // eslint-disable-next-line import/prefer-default-export
 export class ShopDB {
   private db:Database;
@@ -43,6 +19,7 @@ export class ShopDB {
        */
   public close():void {
     this.db.close();
+    console.log('DB was closed successfully');
   }
 
   /**
