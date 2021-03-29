@@ -1,32 +1,77 @@
 // app main point;
-// can have full API routing for CRUD (will be plus) OR in simplified version:
-// can only call getAllCashiers + getTargetCashiers1 + getTargetCashiers2 and log output of both
 // Import dependencies
 import { ShopDB } from './db';
 import {
-  ICashier, Sex, City, Net, SqlFilter,
+  ICashier, Sex, City, Net, SqlFilter, Name, Address,
 } from './models';
 import { Task } from './const';
+import { randomPhone, randomPN, showHelp } from './utils';
 
 let task:string = '';
+
+let tmpEmplName:Name = <Name>{};
+let tmpPatronymic:string = '';
+const tmpPhone:string = randomPhone();
+let tmpAddr:Address = <Address>{};
+let tmpBuilding:any = null;
+let tmpApartment:number = 0;
+let tmpCity:City|any;
+let id:number = -1;
+
 const arg:string = process.argv[2];
+console.log(process.argv[2]);
 if (arg) {
-  task = arg;
+  if ((arg === Task.cashierCreate) && (process.argv.length >= 9)) {
+    console.log(`${process.argv[3]}, 
+${process.argv[4]}, 
+${process.argv[5]}, 
+${process.argv[6]}, 
+${process.argv[7]},
+${process.argv[8]}}`);
+
+    task = arg;
+    tmpEmplName = {
+      lastName: process.argv[3],
+      firstName: process.argv[4],
+      patronymic: '',
+    };
+
+    tmpCity = City[process.argv[5] as any];
+    tmpCity = (tmpCity) || City.Львов;
+    console.log(tmpCity);
+
+    tmpAddr = {
+      city: tmpCity,
+      street: process.argv[6],
+      building: null, // for the futurte update
+      apartment: null, // for the futurte update
+    };
+  }
+
+  if ((arg === Task.cashierUpdate) && (process.argv.length >= 7)) {
+    id = process.argv[3] as unknown as number;
+    tmpPatronymic = process.argv[4]; // for the futurte update
+    tmpBuilding = process.argv[5] as unknown as number;
+    tmpApartment = process.argv[6] as unknown as number;
+    task = arg;
+  }
+
+  if (((arg === Task.cashierDelete) || (arg === Task.getCashierById))
+          && (process.argv.length >= 4)) {
+    console.log(`Target ID is ${process.argv[3]}`);
+    task = arg;
+    id = process.argv[3] as unknown as number;
+  }
+
+  if (!task) {
+    showHelp();
+  }
 } else {
-  process.argv.forEach((val, index, array) => {
+  process.argv.forEach((val, index) => {
     console.log(`${index}: ${val}`);
   });
-  console.log(`Please, use one from next options:
-              ${Task.cashierCreate}, 
-              ${Task.cashierUpdate},  
-              ${Task.cashierDelete}, 
-              ${Task.getAllCashiers}, 
-              ${Task.useFilter1}, 
-              ${Task.useFilter2}, 
-              ${Task.getTargetCashiers1} or  
-              ${Task.getTargetCashiers2}`);
+  showHelp();
 }
-console.log(process.argv[2]);
 
 // connecting to the shop DB (login and password not require)
 const db = new ShopDB('db.sqlite');
@@ -35,24 +80,14 @@ const db = new ShopDB('db.sqlite');
 if (task === Task.cashierCreate) {
   const newCashier:ICashier = {
     id: null,
-    personnelNumber: '457932',
-    employeeName: {
-      lastName: 'Бабенко',
-      firstName: 'Анна',
-      patronymic: 'Николаевна',
-    },
+    personnelNumber: randomPN(),
+    employeeName: tmpEmplName,
     sex: Sex.female,
-    phone: '380962571544',
-    addr: {
-      city: City.Одесса,
-      street: 'ул. Бенюка',
-      building: 45,
-      litera: null,
-      apartment: null,
-    },
+    phone: tmpPhone,
+    addr: tmpAddr,
     birthday: null,
     shopID: 17,
-    startWork: new Date(2021, 2, 18),
+    startWork: new Date(2021, 2, 18), // Month in 0-11
     endWork: null,
     lastNet: Net.Comfy,
   };
@@ -63,26 +98,44 @@ if (task === Task.cashierCreate) {
     newCashier.id = value;
     console.log(newCashier.id);
 
-    // getting information about cashier with id=19 and updating it
+    // getting information about cashier with newCashier.id
     const tmpCashier:Promise<ICashier> = db.getCashierById(newCashier.id);
     tmpCashier.then((values) => {
       const cashier:ICashier = values;
       console.log(cashier);
-
-      // updating information about cashier
-      cashier.birthday = new Date(1983, 0, 3); // Month in 0-11
-      cashier.addr.building = 45;
-      cashier.addr.apartment = 15;
-      console.log(cashier);
-      db.updateCashier(cashier);
     });
+  });
+}
+
+if (task === Task.cashierUpdate) {
+  // getting information about cashier with newCashier.id and updating it
+  const tmpCashier:Promise<ICashier> = db.getCashierById(id);
+  tmpCashier.then((values) => {
+    const cashier:ICashier = values;
+    console.log(cashier);
+
+    // updating information about cashier
+    cashier.addr.city = cashier.addr.city as unknown as number;
+    cashier.employeeName.patronymic = tmpPatronymic;
+    cashier.addr.building = tmpBuilding;
+    cashier.addr.apartment = tmpApartment;
+    db.updateCashier(cashier);
+    console.log(cashier);
+  });
+}
+
+// getting information about cashier by id
+if (task === Task.getCashierById) {
+  const targetCashier:Promise<ICashier> = db.getCashierById(id);
+  targetCashier.then((val) => {
+    console.log(val);
   });
 }
 
 // deleting information about cashier with some id
 if (task === Task.cashierDelete) {
-  db.delCashier(20);
-// db.completDeleteCashier(20);
+// db.delCashier(20);
+  db.completDeleteCashier(id);
 }
 // getting info about all cashiers
 if (task === Task.getAllCashiers) {

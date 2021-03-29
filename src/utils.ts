@@ -1,4 +1,5 @@
 // helpers, utils, etc. (loggers, time parser etc. - if there are any)
+import { PNMAX, PNMIN, Task } from './const';
 import type {
   Name, Address, ICashier,
 } from './models';
@@ -74,4 +75,53 @@ export function parceCashier(row:any):ICashier {
     lastNet: Net[row.lastNet] as unknown as Net,
   };
   return cashier;
+}
+
+/**
+ * Generates a random integer between min and max (inclusive)
+ * @returns randomly generated integer
+ */
+export function randomPN(): number {
+  return Math.floor(Math.random() * (PNMAX - PNMIN + 1) + PNMIN);
+}
+
+/**
+ * Generates a random phone number
+ * @returns randomly generated integer
+ */
+export function randomPhone(): string {
+  const operator = Math.floor(Math.random() * (99 - 50) + 50);
+  const number = Math.floor(Math.random() * (9999999 - 1000000) + 1000000);
+  return `380${operator}${number}`;
+}
+
+/**
+ * Generates a halp topic for command line usage
+ */
+export function showHelp():void {
+  console.log(`Please, use one from the next options:
+              ${Task.cashierCreate} lastName firstName city street building apartment,
+              ${Task.cashierUpdate} id patronymic building apartment, 
+              ${Task.getCashierById} id,
+              ${Task.cashierDelete} id, 
+              ${Task.getAllCashiers}, 
+              ${Task.useFilter1}, 
+              ${Task.useFilter2}, 
+              ${Task.getTargetCashiers1},  
+              ${Task.getTargetCashiers2}
+              something like this:
+              --cashierCreate Бобкова Наталья Харьков 'ул. Каштановая' 18 36 
+              --cashierUpdate 57 Валентиновна 34 28
+              --getCashierById 41  
+              --cashierDelete 38
+              --useFilter1
+              --useFilter2
+              --getTargetCashiers1
+              or 
+              --getTargetCashiers2
+              `);
+}
+
+export function parseArgs():void {
+
 }

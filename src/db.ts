@@ -37,18 +37,18 @@ export class ShopDB {
                               litera = '${cashier.addr.litera}' AND 
                               apartment = '${cashier.addr.apartment}';`;
 
-      this.db.get(sql, (err:any, res:any) => {
+      this.db.get(sql, (err:any, row:any) => {
         console.log(sql);
         if (err) {
           console.log(err);
           return;
         }
-        if (res) {
-          addrID = res.ID;
-
-          console.log(`addrID = ${addrID}`);
-          if (addrID < 0) {
-            sql = `INSERT INTO Address (
+        if (row) {
+          addrID = row.ID;
+        }
+        console.log(`addrID = ${addrID}`);
+        if (addrID < 0) {
+          sql = `INSERT INTO Address (
                                     city,
                                     street,
                                     building,
@@ -62,24 +62,25 @@ export class ShopDB {
                                     '${cashier.addr.litera}',
                                     '${cashier.addr.apartment}'
                                   )`;
-            this.db.run(sql, (resIns:any, errIns:any) => {
-              if (errIns) {
-                console.log(errIns);
+          this.db.run(sql, (resIns:any, errIns:any) => {
+            console.log(sql);
+            if (errIns) {
+              console.log(errIns);
+              return;
+            }
+            sql = 'SELECT ID FROM Address WHERE rowid = last_insert_rowid();';
+            this.db.get(sql, (err:any, addrIdRow:number) => {
+              console.log(sql);
+              if (err) {
+                console.log(err);
                 return;
               }
-              sql = 'SELECT ID FROM Address WHERE rowid = last_insert_rowid();';
-              this.db.get(sql, (err:any, addrIdRow:number) => {
-                console.log(sql);
-                if (err) {
-                  console.log(err);
-                  return;
-                }
-                addrID = addrIdRow;
-                console.log(`new addrID = ${addrID}`);
-              });
+              addrID = addrIdRow;
+              console.log(`new addrID = ${addrID}`);
             });
-          }
-          sql = `INSERT INTO Cashier (
+          });
+        }
+        sql = `INSERT INTO Cashier (
                                     personnelNumber,
                                     lastName,
                                     firstName,
@@ -105,32 +106,31 @@ export class ShopDB {
                                     '${dateFormat(cashier.startWork)}',
                                     '${cashier.lastNet}'
                                 )`;
-          this.db.run(sql, (err:any, res:any) => {
+        this.db.run(sql, (err:any, res:any) => {
+          console.log(sql);
+          console.log(res);
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log(`Данные по кассиру ${cashier.employeeName.lastName} успешно добавлены`);
+          sql = `SELECT  id 
+                    FROM Cashier 
+                    WHERE rowid=last_insert_rowid() OR 
+                          personnelNumber = '${cashier.personnelNumber}'`;
+          this.db.get(sql, (err:any, res:any) => {
             console.log(sql);
-            console.log(res);
             if (err) {
               console.log(err);
               return;
             }
-            console.log(`Данные по кассиру ${cashier.employeeName.lastName} успешно добавлены`);
-            sql = `SELECT  id 
-                    FROM Cashier 
-                    WHERE rowid=last_insert_rowid() OR 
-                          personnelNumber = '${cashier.personnelNumber}'`;
-            this.db.get(sql, (err:any, res:any) => {
-              console.log(sql);
-              if (err) {
-                console.log(err);
-                return;
-              }
-              if (res) {
-                id = res.id;
-                console.log(`New Cashier's id is ${id}`);
-                result(id);
-              }
-            });
+            if (res) {
+              id = res.id;
+              console.log(`New Cashier's id is ${id}`);
+              result(id);
+            }
           });
-        }
+        });
       });
     });
   }
@@ -153,8 +153,9 @@ export class ShopDB {
       this.db.get(sql, (err: any, row: any) => {
         if (row) {
           const cashier:ICashier = parceCashier(row);
-          // console.log(`Данные о кассире с id ${id}:\n`, cashier);
           res(cashier);
+        } else {
+          console.log(`Данные о кассире с id ${id} не найдены`);
         }
       });
     });
@@ -225,7 +226,7 @@ export class ShopDB {
         console.log(err);
         return;
       }
-      console.log(`Информация о кассире с ${id} успешно удалена`);
+      console.log(`Информация о кассире с id= ${id} успешно удалена`);
     });
   }
 

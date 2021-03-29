@@ -41,15 +41,15 @@ export enum Sex {
 export type Address  = {
     city:City
     street:string
-    building:number
-    litera:string | null
-    apartment:number | null
+    building:number | null
+    litera?:string | null
+    apartment?:number | null
 }
 
 export type Name = {
     firstName:string,
     lastName:string,
-    patronymic:string
+    patronymic?:string
 }
 
 export interface IShop {
@@ -71,10 +71,6 @@ export interface ICashier {
     startWork:Date
     endWork:Date | null
     lastNet: Net
-    // create ():number
-    // read (id:number):ICashier
-    // update ():void
-    // delete ():void
 }
 
 export interface ICashRegister {
