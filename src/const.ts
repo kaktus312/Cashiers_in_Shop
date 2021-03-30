@@ -1,4 +1,5 @@
 // constants
+
 export enum Task {
     cashierCreate = '--cashierCreate',
     getCashierById = '--getCashierById',
@@ -11,5 +12,5 @@ export enum Task {
     getTargetCashiers2 = '--getTargetCashiers2',
 }
 
-export const PNMIN:number = 450000;
-export const PNMAX:number = 999999;
+export const PNMIN:number = 450000; // min value of the personnel number
+export const PNMAX:number = 999999; // max value of the personnel number
