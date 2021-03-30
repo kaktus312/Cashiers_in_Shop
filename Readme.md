@@ -2,20 +2,20 @@
  ![alt](imgs/Scr5_VSC.PNG)
 
 ## Description
-    This is a Typescript project solution for "Node.js (TS) Internship - Test task 4" from ChatBotStudio>_
+This is a Typescript project for the solution of the "Node.js (TS) Internship - Test task 4" from ChatBotStudio>_
 
 ## Usage
 1. Copy project
 2. Install all dependencies
-3. Compille by command 
+3. Compille by the command 
 ``` cmd  
    tsc 
 ```
-4. Run with command 
+4. Run with a command 
   ``` cmd
-   node .\dist\app.js_ 
+   node .\dist\app.js 
   ```
-  and use some options keys:
+  and use option keys:
   ``` cmd
   --cashierCreate lastName firstName city street building apartment
 
@@ -23,7 +23,7 @@
   
   --cashierUpdate id patronymic building apartment
   
-   --cashierDelete id_
+   --cashierDelete id
   
    --useFilter1
   
