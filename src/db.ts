@@ -10,7 +10,7 @@ export class ShopDB {
   private db:Database;
 
   constructor(dbPath:string) {
-    console.log(dbPath);
+    // console.log(dbPath);
     this.db = new Database(dbPath);
   }
 
@@ -38,7 +38,7 @@ export class ShopDB {
                               apartment = '${cashier.addr.apartment}';`;
 
       this.db.get(sql, (err:any, row:any) => {
-        console.log(sql);
+        // console.log(sql);
         if (err) {
           console.log(err);
           return;
@@ -46,7 +46,7 @@ export class ShopDB {
         if (row) {
           addrID = row.ID;
         }
-        console.log(`addrID = ${addrID}`);
+        // console.log(`addrID = ${addrID}`);
         if (addrID < 0) {
           sql = `INSERT INTO Address (
                                     city,
@@ -63,14 +63,14 @@ export class ShopDB {
                                     '${cashier.addr.apartment}'
                                   )`;
           this.db.run(sql, (resIns:any, errIns:any) => {
-            console.log(sql);
+            // console.log(sql);
             if (errIns) {
               console.log(errIns);
               return;
             }
             sql = 'SELECT ID FROM Address WHERE rowid = last_insert_rowid();';
             this.db.get(sql, (err:any, addrIdRow:number) => {
-              console.log(sql);
+              // console.log(sql);
               if (err) {
                 console.log(err);
                 return;
@@ -107,8 +107,8 @@ export class ShopDB {
                                     '${cashier.lastNet}'
                                 )`;
         this.db.run(sql, (err:any, res:any) => {
-          console.log(sql);
-          console.log(res);
+          // console.log(sql);
+          // console.log(res);
           if (err) {
             console.log(err);
             return;
@@ -119,7 +119,7 @@ export class ShopDB {
                     WHERE rowid=last_insert_rowid() OR 
                           personnelNumber = '${cashier.personnelNumber}'`;
           this.db.get(sql, (err:any, res:any) => {
-            console.log(sql);
+            // console.log(sql);
             if (err) {
               console.log(err);
               return;
@@ -169,12 +169,12 @@ export class ShopDB {
                         FROM Cashier 
                         WHERE id='${cashier.id}'`;
     this.db.get(sql, (err:any, addrIdRow:any) => {
+      // console.log(sql);
       if (err) {
         console.log(err);
-        console.log(sql);
         return;
       }
-      console.log(addrIdRow);
+      // console.log(addrIdRow);
 
       sql = `UPDATE Address 
                 SET city = '${City[cashier.addr.city]}', 
@@ -188,7 +188,7 @@ export class ShopDB {
           console.log(errUpdAddr);
           return;
         }
-        console.log(sql);
+        // console.log(sql);
 
         sql = `UPDATE Cashier 
                   SET personnelNumber = '${cashier.personnelNumber}', 
@@ -203,7 +203,7 @@ export class ShopDB {
                       startWork = '${cashier.startWork}', 
                       lastNet = '${Net[cashier.lastNet] as unknown as number}' 
                 WHERE id='${cashier.id}'`;
-        console.log(sql);
+        // console.log(sql);
         this.db.run(sql, (resUdate:any, errUpdate:any) => {
           if (errUpdate) {
             console.log(errUpdate);
@@ -221,7 +221,7 @@ export class ShopDB {
   public delCashier(id:number):void {
     const sql = `UPDATE Cashier SET deleted = 1 WHERE id='${id}'`;
     this.db.run(sql, (res:any, err:any) => {
-      console.log(sql);
+      // console.log(sql);
       if (err) {
         console.log(err);
         return;
@@ -236,7 +236,7 @@ export class ShopDB {
   public completDeleteCashier(id:number):void {
     const sql = `DELETE FROM Cashier WHERE id='${id}'`;
     this.db.run(sql, (res:any, err:any) => {
-      console.log(sql);
+      // console.log(sql);
       if (err) {
         console.log(err);
         return;
@@ -281,7 +281,7 @@ export class ShopDB {
                          WHERE Cashier.addrID = Address.ID
                                 ${fltr};`;
     console.log('Информация о всех кассирах согласно заданному фильтру:');
-    console.log(sql);
+    // console.log(sql);
     this.db.each(sql, (err: any, row: any) => {
       if (row) {
         console.log(parceCashier(row));
@@ -307,7 +307,7 @@ export class ShopDB {
                                                          Address.City = '${City[City.Львов]}') AND 
                                                          Cashier.lastNet IN (${Net.Сiльпо} , ${Net.Арсен}) AND 
                                                          Cashier.startWork<='2016-01-01'`;
-    console.log(sql);
+    // console.log(sql);
     this.db.each(sql, (err: any, row: any) => {
       if (err) {
         console.log(err);
@@ -342,7 +342,7 @@ export class ShopDB {
                                                        ((CashRegister.transactionTime BETWEEN '00:00:00' AND '07:00:00') OR 
                                                         (CashRegister.transactionTime BETWEEN '23:00:00' AND '23:59:59')) AND 
                                                         strftime('%w', CashRegister.transactionDate) = '1')`;
-    console.log(sql);
+    // console.log(sql);
     this.db.each(sql, (err: any, row: any) => {
       if (err) {
         console.log(err);

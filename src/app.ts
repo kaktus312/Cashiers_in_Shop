@@ -4,12 +4,21 @@ import {
   ICashier, Sex, City, Net, SqlFilter, Name, Address,
 } from './models';
 import { Task } from './const';
-import { randomPhone, randomPN, showHelp } from './utils';
+import { checkArgs, randomPhone, randomPN, showHelp } from './utils';
 
 require('dotenv').config('./.env');
 
-let task:string = '';
+// check command line arguments. If error - show help and exit
+const task:Task | undefined = checkArgs();
+if (!task) {
+  process.argv.forEach((val, index) => {
+    console.log(`${index}: ${val}`);
+  });
+  showHelp();
+  process.exit(0);
+}
 
+// task seems ok, continue programm
 let tmpEmplName:Name = <Name>{};
 let tmpPatronymic:string = '';
 const tmpPhone:string = randomPhone();
@@ -19,66 +28,28 @@ let tmpApartment:number = 0;
 let tmpCity:City|any;
 let id:number = -1;
 
-const arg:string = process.argv[2];
-console.log(process.argv[2]);
-if (arg) {
-  if ((arg === Task.cashierCreate) && (process.argv.length >= 9)) {
-    console.log(`${process.argv[3]}, 
-${process.argv[4]}, 
-${process.argv[5]}, 
-${process.argv[6]}, 
-${process.argv[7]},
-${process.argv[8]}}`);
-
-    task = arg;
-    tmpEmplName = {
-      lastName: process.argv[3],
-      firstName: process.argv[4],
-      patronymic: '',
-    };
-
-    tmpCity = City[process.argv[5] as any];
-    tmpCity = (tmpCity) || City.Львов;
-    console.log(tmpCity);
-
-    tmpAddr = {
-      city: tmpCity,
-      street: process.argv[6],
-      building: process.argv[7] as unknown as number,
-      apartment: process.argv[8] as unknown as number,
-    };
-  }
-
-  if ((arg === Task.cashierUpdate) && (process.argv.length >= 7)) {
-    id = process.argv[3] as unknown as number;
-    tmpPatronymic = process.argv[4];
-    tmpBuilding = process.argv[5] as unknown as number;
-    tmpApartment = process.argv[6] as unknown as number;
-    task = arg;
-  }
-
-  if (((arg === Task.cashierDelete) || (arg === Task.getCashierById))
-          && (process.argv.length >= 4)) {
-    console.log(`Target ID is ${process.argv[3]}`);
-    task = arg;
-    id = process.argv[3] as unknown as number;
-  }
-
-  if (!task) {
-    showHelp();
-  }
-} else {
-  process.argv.forEach((val, index) => {
-    console.log(`${index}: ${val}`);
-  });
-  showHelp();
-}
-
 // connecting to the shop DB (login and password not require)
 const db = new ShopDB(process.env.DB_PATH as string);
 
 // creating a new Casheir, get information about it and update some fields
 if (task === Task.cashierCreate) {
+  tmpEmplName = {
+    lastName: process.argv[3],
+    firstName: process.argv[4],
+    patronymic: '',
+  };
+
+  tmpCity = City[process.argv[5] as any];
+  tmpCity = (tmpCity) || City.Львов;
+  // console.log(tmpCity);
+
+  tmpAddr = {
+    city: tmpCity,
+    street: process.argv[6],
+    building: process.argv[7] as unknown as number,
+    apartment: process.argv[8] as unknown as number,
+  };
+
   const newCashier:ICashier = {
     id: null,
     personnelNumber: randomPN(),
@@ -97,23 +68,28 @@ if (task === Task.cashierCreate) {
   const newCashierId:Promise<number> = db.addCashier(newCashier);
   newCashierId.then((value) => {
     newCashier.id = value;
-    console.log(newCashier.id);
+    // console.log(newCashier.id);
 
     // getting information about cashier with newCashier.id
     const tmpCashier:Promise<ICashier> = db.getCashierById(newCashier.id);
     tmpCashier.then((values) => {
       const cashier:ICashier = values;
-      console.log(cashier);
+      console.log(`Информация о новом кассире с id ${newCashier.id}:\n`, cashier);
     });
   });
 }
 
+// getting information about cashier with newCashier.id and updating it
 if (task === Task.cashierUpdate) {
-  // getting information about cashier with newCashier.id and updating it
+  id = process.argv[3] as unknown as number;
+  tmpPatronymic = process.argv[4];
+  tmpBuilding = process.argv[5] as unknown as number;
+  tmpApartment = process.argv[6] as unknown as number;
+
   const tmpCashier:Promise<ICashier> = db.getCashierById(id);
   tmpCashier.then((values) => {
     const cashier:ICashier = values;
-    console.log(cashier);
+    console.log(`Исходные данные кассира с id ${id}:\n`, cashier);
 
     // updating information about cashier
     cashier.addr.city = cashier.addr.city as unknown as number;
@@ -121,21 +97,23 @@ if (task === Task.cashierUpdate) {
     cashier.addr.building = tmpBuilding;
     cashier.addr.apartment = tmpApartment;
     db.updateCashier(cashier);
-    console.log(cashier);
+    console.log(`Внесенные изменения о кассире с id ${id}:\n`, cashier);
   });
 }
 
 // getting information about cashier by id
 if (task === Task.getCashierById) {
+  id = process.argv[3] as unknown as number;
   const targetCashier:Promise<ICashier> = db.getCashierById(id);
   targetCashier.then((val) => {
-    console.log(val);
+    console.log(`Информация о кассире с id ${id}:\n`, val);
   });
 }
 
 // deleting information about cashier with some id
 if (task === Task.cashierDelete) {
-// db.delCashier(20);
+  id = process.argv[3] as unknown as number;
+  // db.delCashier(20);
   db.completDeleteCashier(id);
 }
 // getting info about all cashiers

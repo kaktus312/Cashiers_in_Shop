@@ -96,7 +96,7 @@ export function randomPhone(): string {
 }
 
 /**
- * Generates a halp topic for command line usage
+ * Generates a help topic for command line usage
  */
 export function showHelp():void {
   console.log(`Please, use one from the next options:
@@ -118,7 +118,20 @@ export function showHelp():void {
               --useFilter1
               --useFilter2
               --getTargetCashiers1
-              or 
               --getTargetCashiers2
               `);
+}
+
+export function checkArgs():Task | undefined {
+  const arg:any = process.argv[2];
+  const argNum:number = process.argv.length;
+  const task:Task | undefined = (Object.values(Task).includes(arg)) ? arg : undefined;
+  // console.log(task, process.argv[2]);
+
+  if ((task === Task.cashierCreate) && (argNum >= 9)) return task;
+  if ((task === Task.cashierUpdate) && (argNum >= 7)) return task;
+  if (((task === Task.cashierDelete) || (task === Task.getCashierById)) && (argNum >= 4)) {
+    return task;
+  }
+  return task;
 }
