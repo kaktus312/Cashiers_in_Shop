@@ -1,11 +1,12 @@
 // app main point;
-// Import dependencies
 import { ShopDB } from './db';
 import {
   ICashier, Sex, City, Net, SqlFilter, Name, Address,
 } from './models';
 import { Task } from './const';
 import { randomPhone, randomPN, showHelp } from './utils';
+
+require('dotenv').config('./.env');
 
 let task:string = '';
 
@@ -43,14 +44,14 @@ ${process.argv[8]}}`);
     tmpAddr = {
       city: tmpCity,
       street: process.argv[6],
-      building: null, // for the futurte update
-      apartment: null, // for the futurte update
+      building: process.argv[7] as unknown as number,
+      apartment: process.argv[8] as unknown as number,
     };
   }
 
   if ((arg === Task.cashierUpdate) && (process.argv.length >= 7)) {
     id = process.argv[3] as unknown as number;
-    tmpPatronymic = process.argv[4]; // for the futurte update
+    tmpPatronymic = process.argv[4];
     tmpBuilding = process.argv[5] as unknown as number;
     tmpApartment = process.argv[6] as unknown as number;
     task = arg;
@@ -74,7 +75,7 @@ ${process.argv[8]}}`);
 }
 
 // connecting to the shop DB (login and password not require)
-const db = new ShopDB('db.sqlite');
+const db = new ShopDB(process.env.DB_PATH as string);
 
 // creating a new Casheir, get information about it and update some fields
 if (task === Task.cashierCreate) {

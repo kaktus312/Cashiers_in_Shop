@@ -109,6 +109,7 @@ export function showHelp():void {
               ${Task.useFilter2}, 
               ${Task.getTargetCashiers1},  
               ${Task.getTargetCashiers2}
+
               something like this:
               --cashierCreate Бобкова Наталья Харьков 'ул. Каштановая' 18 36 
               --cashierUpdate 57 Валентиновна 34 28
@@ -120,8 +121,4 @@ export function showHelp():void {
               or 
               --getTargetCashiers2
               `);
-}
-
-export function parseArgs():void {
-
 }
