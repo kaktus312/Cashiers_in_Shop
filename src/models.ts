@@ -41,15 +41,15 @@ export enum Sex {
 export type Address  = {
     city:City
     street:string
-    building:number
-    litera:string | null
-    apartment:number | null
+    building:number | null
+    litera?:string | null
+    apartment?:number | null
 }
 
 export type Name = {
     firstName:string,
     lastName:string,
-    patronymic:string
+    patronymic?:string
 }
 
 export interface IShop {
@@ -71,16 +71,22 @@ export interface ICashier {
     startWork:Date
     endWork:Date | null
     lastNet: Net
-    // create ():number
-    // read (id:number):ICashier
-    // update ():void
-    // delete ():void
 }
 
-interface ICashRegister {
+export interface ICashRegister {
     readonly id:number
     cashBoxNumber:number
     cashierID:number
     value:number
     transaction_Time:Date
+}
+
+export type SqlFilter = {
+    lastName?:string
+    firstName?:string
+    phone?:string
+    sex?:Sex
+    lastNet?:Net
+    operator?:string
+    city?:City
 }
