@@ -62,25 +62,43 @@ export class ShopDB {
                                     '${cashier.addr.litera}',
                                     '${cashier.addr.apartment}'
                                   )`;
-          this.db.run(sql, (resIns:any, errIns:any) => {
+          this.db.run(sql, (errIns:any) => {
             // console.log(sql);
             if (errIns) {
               console.log(errIns);
               return;
             }
             sql = 'SELECT ID FROM Address WHERE rowid = last_insert_rowid();';
-            this.db.get(sql, (err:any, addrIdRow:number) => {
+            this.db.get(sql, (err:any, addrIdRow:any) => {
               // console.log(sql);
               if (err) {
                 console.log(err);
                 return;
               }
-              addrID = addrIdRow;
-              console.log(`new addrID = ${addrID}`);
+              addrID = addrIdRow.ID;
+              // console.log(`new addrID = ${addrID}`);
+              const newCashierID:Promise<number> = this.cashierInsert(cashier, addrID);
+              newCashierID.then((val) => {
+                id = val;
+                result(id);
+              });
             });
           });
+        } else {
+          const newCashierID:Promise<number> = this.cashierInsert(cashier, addrID);
+          newCashierID.then((val) => {
+            id = val;
+            result(id);
+          });
         }
-        sql = `INSERT INTO Cashier (
+      });
+    });
+  }
+
+  private cashierInsert(cashier: ICashier, addrID:number):Promise<number> {
+    let newCashierID = -1;
+    return new Promise((reslt) => {
+      let sql:string = `INSERT INTO Cashier (
                                     personnelNumber,
                                     lastName,
                                     firstName,
@@ -106,30 +124,28 @@ export class ShopDB {
                                     '${dateFormat(cashier.startWork)}',
                                     '${cashier.lastNet}'
                                 )`;
-        this.db.run(sql, (err:any, res:any) => {
+      this.db.run(sql, (res:any, err:any) => {
+        // console.log(sql);
+        // console.log(res);
+        if (err) {
+          console.log(err);
+          return;
+        }
+        sql = `SELECT  id 
+                 FROM Cashier 
+                WHERE personnelNumber = '${cashier.personnelNumber}'`;
+        this.db.get(sql, (errSel:any, resSel:any) => {
           // console.log(sql);
-          // console.log(res);
-          if (err) {
-            console.log(err);
+          if (errSel) {
+            console.log(errSel);
             return;
           }
-          console.log(`Данные по кассиру ${cashier.employeeName.lastName} успешно добавлены`);
-          sql = `SELECT  id 
-                    FROM Cashier 
-                    WHERE rowid=last_insert_rowid() OR 
-                          personnelNumber = '${cashier.personnelNumber}'`;
-          this.db.get(sql, (err:any, res:any) => {
-            // console.log(sql);
-            if (err) {
-              console.log(err);
-              return;
-            }
-            if (res) {
-              id = res.id;
-              console.log(`New Cashier's id is ${id}`);
-              result(id);
-            }
-          });
+          if (resSel) {
+            newCashierID = resSel.id;
+            console.log(`New Cashier's id is ${newCashierID}`);
+            console.log(`Данные по кассиру ${cashier.employeeName.lastName} успешно добавлены`);
+            reslt(newCashierID);
+          }
         });
       });
     });
@@ -177,7 +193,7 @@ export class ShopDB {
       // console.log(addrIdRow);
 
       sql = `UPDATE Address 
-                SET city = '${City[cashier.addr.city]}', 
+                SET city = '${cashier.addr.city}', 
                     street = '${cashier.addr.street}', 
                     building = '${cashier.addr.building}', 
                     litera = '${cashier.addr.litera}', 
