@@ -193,7 +193,7 @@ export class ShopDB {
       // console.log(addrIdRow);
 
       sql = `UPDATE Address 
-                SET city = '${City[cashier.addr.city]}', 
+                SET city = '${cashier.addr.city}', 
                     street = '${cashier.addr.street}', 
                     building = '${cashier.addr.building}', 
                     litera = '${cashier.addr.litera}', 
